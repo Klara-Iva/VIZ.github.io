@@ -111,12 +111,10 @@
           if (alreadyActiveIndex !== -1) {
             activeButtons.splice(alreadyActiveIndex, 1);
             clickedButton.classList.remove("active");
-          } 
-          else if (activeButtons.length < 2) {
+          } else if (activeButtons.length < 2) {
             activeButtons.push(clickedButtonValue);
             clickedButton.classList.add("active");
-          } 
-          else {
+          } else {
             const firstButtonValue = activeButtons.shift();
             const firstButton = buttonContainer.querySelector(
               "#\\3" + firstButtonValue
@@ -165,16 +163,15 @@
       let selectedYear = years[slider.value];
 
       slider.addEventListener("input", () => {
-       svg.select(".legend").remove();
+        svg.select(".legend").remove();
         svg.select(".legend-text").remove();
         const selectedIndex = slider.value;
         selectedYear = years[selectedIndex];
         updateColorScaleAndMap();
         if (selectedCountyName != "")
           piechart(selectedCountyName, selectedYear);
-          tooltip.style("visibility", "visible").text("Year: " + selectedYear);
+        tooltip.style("visibility", "visible").text("Year: " + selectedYear);
       });
-
 
       slider.addEventListener("pointerdown", () => {
         tooltip.style("visibility", "visible");
@@ -357,10 +354,10 @@
                 "Selected county: None";
               d3.select(".row-2").select("svg").remove();
               barchart([]);
-            } 
-            else {
+            } else {
               selectedCountyName = countyName;
-              document.getElementById("selected-country").textContent ="Selected county: " + selectedCountyName;
+              document.getElementById("selected-country").textContent =
+                "Selected county: " + selectedCountyName;
               piechart(countyName, selectedYear);
               if (activeButtons.length > 0) {
                 barchart(

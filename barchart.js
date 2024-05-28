@@ -29,7 +29,9 @@ function barchart(countyName, firstChoice, secondChoice) {
               year: year,
               firstCount: countyFirstData[year],
               secondCount: countySecondData ? countySecondData[year] : null,
-              totalCount: countySecondData ? countyFirstData[year] + countySecondData[year] : countyFirstData[year],
+              totalCount: countySecondData
+                ? countyFirstData[year] + countySecondData[year]
+                : countyFirstData[year],
             };
             chartData.push(dataPoint);
           }
@@ -63,31 +65,48 @@ function updateBarChart(data, countyName, firstChoice, secondChoice) {
     .attr("width", parentWidth + margin.right)
     .attr("height", height + margin.top + margin.bottom)
     .append("g")
-    .attr("transform", "translate(" + (margin.left + 20) + "," + margin.top + ")");
+    .attr(
+      "transform",
+      "translate(" + (margin.left + 20) + "," + margin.top + ")"
+    );
 
   const xScale = d3.scale
     .ordinal()
-    .domain(data.map(function (d) {
-      return d.year;
-    }))
+    .domain(
+      data.map(function (d) {
+        return d.year;
+      })
+    )
     .rangeRoundBands([0, width], 0.6);
 
   const yScale = d3.scale
     .linear()
-    .domain([0, d3.max(data, function (d) {
-      return d.firstCount + d3.max(data, function (d) {
-        return d.firstCount / 10;
-      });
-    }) || 0])
+    .domain([
+      0,
+      d3.max(data, function (d) {
+        return (
+          d.firstCount +
+          d3.max(data, function (d) {
+            return d.firstCount / 10;
+          })
+        );
+      }) || 0,
+    ])
     .range([height, 0]);
 
   const yScaleLibraries = d3.scale
     .linear()
-    .domain([0, d3.max(data, function (d) {
-      return d.secondCount ? d.secondCount + d3.max(data, function (d) {
-        return d.secondCount / 10;
-      }) : 0;
-    }) || 0])
+    .domain([
+      0,
+      d3.max(data, function (d) {
+        return d.secondCount
+          ? d.secondCount +
+              d3.max(data, function (d) {
+                return d.secondCount / 10;
+              })
+          : 0;
+      }) || 0,
+    ])
     .range([height, 0]);
 
   svg
@@ -124,7 +143,10 @@ function updateBarChart(data, countyName, firstChoice, secondChoice) {
 
   svg
     .append("text")
-    .attr("transform", "translate(" + width / 2 + " ," + (height + margin.bottom - 5) + ")")
+    .attr(
+      "transform",
+      "translate(" + width / 2 + " ," + (height + margin.bottom - 5) + ")"
+    )
     .style("text-anchor", "middle")
     .style("opacity", 0)
     .transition()
@@ -253,7 +275,10 @@ function updateBarChart(data, countyName, firstChoice, secondChoice) {
     .datum(data)
     .attr("class", "line")
     .attr("d", lineFirst)
-    .style("stroke", firstChoice ? firstChoice.color.replace(/,\s*\d\.\d+\)/, ")") : "#ffffff")
+    .style(
+      "stroke",
+      firstChoice ? firstChoice.color.replace(/,\s*\d\.\d+\)/, ")") : "#ffffff"
+    )
     .style("fill", "none")
     .style("stroke-width", "3px")
     .style("opacity", 0)
@@ -277,7 +302,12 @@ function updateBarChart(data, countyName, firstChoice, secondChoice) {
       .datum(data)
       .attr("class", "line")
       .attr("d", lineSecond)
-      .style("stroke", secondChoice ? secondChoice.color.replace(/,\s*\d\.\d+\)/, ")") : "#ffffff")
+      .style(
+        "stroke",
+        secondChoice
+          ? secondChoice.color.replace(/,\s*\d\.\d+\)/, ")")
+          : "#ffffff"
+      )
       .style("fill", "none")
       .style("stroke-width", "3px")
       .style("opacity", 0)

@@ -116,7 +116,6 @@ async function piechart(countyName, year) {
           const percentage = ((d.data.value / total) * 100).toFixed(1);
           return `<tspan>${d.data.name}:</tspan><tspan x="0" dy="1.2em">${percentage}%</tspan>`;
         });
-
     } catch (error) {
       console.error("Error fetching data:", error);
     }
