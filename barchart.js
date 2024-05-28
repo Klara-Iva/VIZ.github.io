@@ -55,6 +55,8 @@ function updateBarChart(data, countyName, firstChoice, secondChoice) {
   const height = 380 - margin.top - margin.bottom;
 
   d3.select(".row-1").select("svg").remove();
+  d3.select(".row-1").style("margin-top","20px");
+
 
   var parentDiv = document.querySelector(".row-2");
   var parentWidth = parentDiv.clientWidth;
