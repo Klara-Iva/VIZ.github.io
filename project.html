@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="barchart.js"></script>
+    <script src="piechart.js"></script>
+    <title>Vizualizacija podataka</title>
+  </head>
+  <body>
+    <header>
+      <h1>Knjižnice i obrazovanje</h1>
+    </header>
+    <div class="zupanija" class="text"></div>
+    <div class="container">
+      <div class="column-1 map-background" style="background-color: #f0f0f0">
+        <div class="col1row1">
+          <br />
+          <select id="myDropdown">
+            <option value="datasets/children.json">children</option>
+            <option value="datasets/pupils.json">pupils</option>
+            <option value="datasets/students.json">students</option>
+            <option value="datasets/regularStudents.json">
+              regular students
+            </option>
+            <option value="datasets/libraries.json">libraries</option>
+            <option value="datasets/librarymaterials.json">
+              library materials
+            </option>
+            <option value="datasets/activeusers.json">
+              active users in library
+            </option>
+          </select>
+          <div class="slider-container">
+            2010
+            <input type="range" min="0" max="6" value="0" id="year-slider" />
+            2022
+          </div>
+        </div>
+
+        <p id="selected-country">Selected county: None</p>
+      </div>
+
+      <div class="column-2">
+        <div class="button-container">
+          <button class="button" id="0">Children</button>
+          <button class="button" id="1">Pupils</button>
+          <button class="button" id="2">Students</button>
+          <button class="button" id="3">Regular Students</button>
+          <button class="button" id="4">Libraries</button>
+          <button class="button" id="5">Library Materials</button>
+          <button class="button" id="6">Active Library Users</button>
+        </div>
+
+        <div class="row-1"></div>
+        <div class="row-2"></div>
+      </div>
+    </div>
+    <script>
+      const buttons = [
+        {
+          xLabel: "Children",
+          dataValue: "datasets/children.json",
+          color: "rgba(2, 54, 123, 0.7)",
+        },
+        {
+          xLabel: "Pupils",
+          dataValue: "datasets/pupils.json",
+          color: "rgba(0, 108, 165, 0.7)",
+        },
+        {
+          xLabel: "Students",
+          dataValue: "datasets/students.json",
+          color: "rgba(4, 150, 199, 0.7)",
+        },
+        {
+          xLabel: "Regular Students",
+          dataValue: "datasets/regularStudents.json",
+          color: "rgba(4, 186, 222, 0.7)",
+        },
+        {
+          xLabel: "Libraries",
+          dataValue: "datasets/libraries.json",
+          color: "rgba(255, 120, 0, 0.7)",
+        },
+        {
+          xLabel: "Library Materials",
+          dataValue: "datasets/librarymaterials.json",
+          color: "rgba(255, 167, 127, 0.8)",
+        },
+        {
+          xLabel: "Active Library Users",
+          dataValue: "datasets/activeusers.json",
+          color: "rgba(230, 81, 0, 0.9)",
+        },
+      ];
+      updateBarChart([]);
+      let selectedCountyName = "";
+
+      const buttonContainer = document.querySelector(".button-container");
+      let activeButtons = [];
+
+      buttonContainer.addEventListener("click", (event) => {
+        const clickedButton = event.target;
+
+        if (clickedButton.classList.contains("button")) {
+          const clickedButtonValue = clickedButton.id;
+          const alreadyActiveIndex = activeButtons.indexOf(clickedButtonValue);
+
+          if (alreadyActiveIndex !== -1) {
+            activeButtons.splice(alreadyActiveIndex, 1);
+            clickedButton.classList.remove("active");
+          } 
+          else if (activeButtons.length < 2) {
+            activeButtons.push(clickedButtonValue);
+            clickedButton.classList.add("active");
+          } 
+          else {
+            const firstButtonValue = activeButtons.shift();
+            const firstButton = buttonContainer.querySelector(
+              "#\\3" + firstButtonValue
+            );
+            firstButton.classList.remove("active");
+
+            activeButtons.push(clickedButtonValue);
+            clickedButton.classList.add("active");
+          }
+          if (activeButtons.length == 0) {
+            if (selectedCountyName) {
+              barchart([]);
+            }
+          }
+          if (activeButtons.length == 1) {
+            if (selectedCountyName) {
+              barchart(selectedCountyName, buttons[activeButtons[0]]);
+            }
+          }
+          if (activeButtons.length == 2) {
+            if (selectedCountyName) {
+              barchart(
+                selectedCountyName,
+                buttons[activeButtons[0]],
+                buttons[activeButtons[1]]
+              );
+            }
+          }
+        }
+      });
+
+      const slider = document.getElementById("year-slider");
+
+      const tooltip = d3
+        .select("body")
+        .append("div")
+        .attr("class", "tooltip")
+        .style("position", "absolute")
+        .style("visibility", "hidden")
+        .style("background", "lightgray")
+        .style("padding", "5px")
+        .style("border-radius", "5px")
+        .style("font-size", "12px");
+
+      const years = [2010, 2013, 2016, 2019, 2020, 2021, 2022];
+      let selectedYear = years[slider.value];
+
+      slider.addEventListener("input", () => {
+       svg.select(".legend").remove();
+        svg.select(".legend-text").remove();
+        const selectedIndex = slider.value;
+        selectedYear = years[selectedIndex];
+        updateColorScaleAndMap();
+        if (selectedCountyName != "")
+          piechart(selectedCountyName, selectedYear);
+          tooltip.style("visibility", "visible").text("Year: " + selectedYear);
+      });
+
+
+      slider.addEventListener("pointerdown", () => {
+        tooltip.style("visibility", "visible");
+      });
+
+      slider.addEventListener("pointermove", (event) => {
+        tooltip
+          .style("top", event.pageY - 15 + "px")
+          .style("left", event.pageX + 15 + "px");
+      });
+
+      slider.addEventListener("pointerup", () => {
+        tooltip.style("visibility", "hidden");
+      });
+
+      const dropdown = document.getElementById("myDropdown");
+      dropdown.addEventListener("change", () => {
+        svg.select(".legend").remove();
+        updateColorScaleAndMap();
+      });
+
+      const projection = d3.geo
+        .mercator()
+        .center([13.5, 7])
+        .scale(5600)
+        .translate([17600, 4500])
+        .rotate([-180, 0]);
+
+      const path = d3.geo.path().projection(projection);
+
+      const svg = d3
+        .select(".column-1")
+        .append("svg")
+        .attr("width", "95%")
+        .attr("height", "650px")
+        .style("background", "f0f0f0")
+        .append("g");
+
+      function updateColorScaleAndMap() {
+        const selectedDataset = dropdown.value;
+        d3.json(selectedDataset, function (error, data) {
+          if (error) {
+            console.error("Error fetching data:", error);
+            return;
+          }
+
+          const yearData = Object.values(data).map(
+            (countyData) => countyData[selectedYear]
+          );
+          const filteredValues = yearData.filter(
+            (value) => value !== undefined
+          );
+
+          const sortedValues = filteredValues.sort((a, b) => b - a);
+          const sortedValuesLenght = sortedValues.length;
+          const thirdMinValue = sortedValues[sortedValuesLenght - 5];
+          const thirdMaxValue = sortedValues[2];
+
+          const color = d3.scale
+            .linear()
+            .domain([thirdMinValue, thirdMaxValue])
+            .interpolate(d3.interpolateHcl)
+            .range([d3.rgb("#f27500"), d3.rgb("#000000")]);
+
+          const legendWidth = 200;
+          const legendHeight = 20;
+
+          const legend = svg
+            .append("g")
+            .attr("class", "legend")
+            .attr("transform", "translate(50, 585)");
+
+          const gradient = legend
+            .append("defs")
+            .append("linearGradient")
+            .attr("id", "gradient")
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "100%")
+            .attr("y2", "0%");
+
+          gradient
+            .append("stop")
+            .attr("offset", "0%")
+            .attr("stop-color", color(sortedValues[sortedValuesLenght - 1]))
+            .attr("stop-opacity", 1);
+
+          gradient
+            .append("stop")
+            .attr("offset", "100%")
+            .attr("stop-color", color(sortedValues[0]))
+            .attr("stop-opacity", 1);
+
+          legend
+            .append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", legendWidth)
+            .attr("height", legendHeight)
+            .style("fill", "url(#gradient)");
+
+          legend
+            .append("text")
+            .attr("class", "legend-text")
+            .attr("x", legendWidth - 20)
+            .attr("y", 40)
+            .attr("alignment-baseline", "middle")
+            .text(sortedValues[0]);
+
+          legend
+            .append("text")
+            .attr("class", "legend-text")
+            .attr("x", -10)
+            .attr("y", 40)
+            .attr("alignment-baseline", "middle")
+            .text(sortedValues[sortedValuesLenght - 1]);
+
+          svg
+            .selectAll(".county")
+            .transition()
+            .duration(150)
+            .style("fill", function (d) {
+              const countyName = d.properties.gn_name;
+              if (countyName === selectedCountyName) {
+                return "#0457C9";
+              }
+              const count = data[countyName]
+                ? data[countyName][selectedYear]
+                : 0;
+              return color(count);
+            });
+        });
+      }
+
+      d3.json("cro.json", function (error, cro) {
+        const data = topojson.feature(cro, cro.objects.layer1);
+
+        const tooltip = d3
+          .select(".row-1")
+          .append("div")
+          .attr("class", "tooltip")
+          .style("position", "absolute")
+          .style("visibility", "hidden")
+          .style("background", "lightgray")
+          .style("padding", "5px")
+          .style("border-radius", "5px")
+          .style("font-size", "12px");
+
+        svg
+          .selectAll("path.county")
+          .data(data.features)
+          .enter()
+          .append("path")
+          .attr("class", "county")
+          .attr("id", function (d) {
+            return d.id;
+          })
+          .attr("d", path)
+          .style("stroke", "black")
+          .style("stroke-width", 1)
+          .style("stroke-opacity", 1)
+          .on("mouseover", function (d) {
+            tooltip.style("visibility", "visible").text(d.properties.gn_name);
+            d3.select(this).style("cursor", "pointer");
+          })
+          .on("mousemove", function () {
+            tooltip
+              .style("top", d3.event.pageY - 15 + "px")
+              .style("left", d3.event.pageX + 15 + "px");
+          })
+          .on("mouseout", function () {
+            tooltip.style("visibility", "hidden");
+          })
+          .on("pointerdown", function (d) {
+            svg.select(".legend").remove();
+            const countyName = d.properties.gn_name;
+            if (selectedCountyName === countyName) {
+              selectedCountyName = "";
+              document.getElementById("selected-country").textContent =
+                "Selected county: None";
+              d3.select(".row-2").select("svg").remove();
+              barchart([]);
+            } 
+            else {
+              selectedCountyName = countyName;
+              document.getElementById("selected-country").textContent ="Selected county: " + selectedCountyName;
+              piechart(countyName, selectedYear);
+              if (activeButtons.length > 0) {
+                barchart(
+                  selectedCountyName,
+                  buttons[activeButtons[0]],
+                  buttons[activeButtons[1]]
+                );
+              }
+            }
+
+            updateColorScaleAndMap();
+          });
+
+        updateColorScaleAndMap();
+      });
+    </script>
+  </body>
+</html>

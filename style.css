@@ -1,0 +1,155 @@
+.container {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 70px;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+.column-1 {
+  width: 650px;
+  padding: 10px;
+  margin: 10px;
+  box-sizing: border-box;
+  
+}
+
+.column-2 {
+  width: 800px;
+  padding: 10px;
+  margin: 10px;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f0f0f0;
+}
+
+.mark.active {
+  background-color: #ffa500;
+  font-weight: bold;
+}
+
+.mark-container {
+  flex-grow: 1;
+}
+
+.slider-marks {
+  display: flexbox;
+}
+
+#year-slider {
+  width: 300px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+#year-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: #ffa500;
+  border-radius: 50%;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+}
+
+#year-slider::-webkit-slider-thumb:active {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.658);
+}
+
+#myDropdown {
+  width: 200px;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 16px;
+}
+
+@media only screen and (max-width: 1538px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .column-1,
+  .column-2 {
+    flex: 1 0 auto;
+  }
+}
+
+#myDropdown:hover {
+  border-color: #dea11e;
+  border-width: 2px;
+  cursor: pointer;
+}
+
+#myDropdown option {
+  color: black;
+  padding: 8px 16px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.button-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+  justify-content: flex-start;
+}
+
+.button {
+  background-color: #e0e0e0;
+  border: none;
+  border-radius: 15px;
+  padding: 5px 10px;
+  cursor: pointer;
+  color: #333;
+}
+
+.button.active {
+  background-color: #ffa500;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  margin-left: 30px;
+}
+
+.col1row1 {
+  display: flex;
+  align-items: center;
+}
+
+header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 97.5%;
+  background-color: #ffa500;
+  color: white;
+  text-align: right;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  height: 40px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+}
