@@ -6,6 +6,13 @@
   margin-right: 50px;
 }
 
+path.domain {
+  fill: none;
+  stroke: black;
+ 
+  stroke-width: 2px;
+}
+
 .column-1 {
   width: 650px;
   padding: 10px;

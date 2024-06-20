@@ -80,6 +80,7 @@ function updateBarChart(data, countyName, firstChoice, secondChoice) {
       })
     )
     .rangeRoundBands([0, width], 0.6);
+    
 
   const yScale = d3.scale
     .linear()
@@ -109,7 +110,8 @@ function updateBarChart(data, countyName, firstChoice, secondChoice) {
           : 0;
       }) || 0,
     ])
-    .range([height, 0]);
+    .range([height, 0])
+   ;
 
   svg
     .append("g")
@@ -124,22 +126,24 @@ function updateBarChart(data, countyName, firstChoice, secondChoice) {
   svg
     .append("g")
     .attr("class", "y axis")
-    .attr("transform", "translate(6,0)")
+    .attr("transform", "translate(0,0)")
     .call(d3.svg.axis().scale(yScale).orient("left"))
     .style("opacity", 0)
     .transition()
     .duration(1000)
-    .style("opacity", 1);
+    .style("opacity", 1)
+   
 
   if (secondChoice) {
     svg
       .append("g")
       .attr("class", "y axis libraries-axis")
-      .attr("transform", "translate(" + (width - 6) + ",0)")
+      .attr("transform", "translate(" + (width ) + ",0)")
       .call(d3.svg.axis().scale(yScaleLibraries).orient("right"))
       .style("opacity", 0)
       .transition()
       .duration(1000)
+      .attr("stroke-width","1px")
       .style("opacity", 1);
   }
 
