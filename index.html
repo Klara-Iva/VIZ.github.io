@@ -362,14 +362,7 @@
                 "Selected county: " + selectedCountyName;
               piechart(countyName, selectedYear);
 
-                  // Clear previous selection
-                  d3.selectAll("path").style("stroke", "#000000").style("stroke-width", "1");
-
-// Highlight selected county
-d3.select(this).style("stroke", "white").style("stroke-width", "3");
-
-
-              if (activeButtons.length > 0) {
+            if (activeButtons.length > 0) {
                 barchart(
                   selectedCountyName,
                   buttons[activeButtons[0]],
